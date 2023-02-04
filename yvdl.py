@@ -8,8 +8,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("link", help="enter link to video")
 args = parser.parse_args()
 
-bar = Bar("Downloading:", max=100)
-
 def progress_bar(stream ,chunk, remaining):
     downloaded = stream.filesize - remaining
     downloaded = (downloaded / stream.filesize) * 100
@@ -24,16 +22,22 @@ def progress_bar(stream ,chunk, remaining):
 
 
 yt = YouTube(args.link, on_progress_callback=progress_bar)
+
 yt = yt.streams\
     .filter(progressive=True, file_extension="mp4")\
     .order_by("resolution")\
     .desc()\
     .first()
 
-print("\n")
+print(f"\n\t{yt.title}")
+print(f"\n\tResosution: {yt.resolution}")
+size = round(yt.filesize / 1024 / 1024, 1)
+print(f"\n\tSize: {size}\n")
+
+bar = Bar("\tDownloading:", max=100)
 
 yt.download()
 
 bar.finish()
 
-print("\nDownloaded successfully !\n")
+print("\n\tDownloaded successfully !\n")
